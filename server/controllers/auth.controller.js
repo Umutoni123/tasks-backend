@@ -96,6 +96,7 @@ export const login = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             message: "Something went wrong",
             error
@@ -220,10 +221,47 @@ export const updateProfile = async (req, res) => {
         }
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             message: "Something went wrong",
             error
         })
     }
 } 
+
+export const getProfile = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = jwtDecode(token);
+        const user = await User.findOne({ _id: decodedToken.user._id })
+        
+        return res.status(200).json({
+            user
+        })
+        
+    } catch (error) {
+        res.status(500).json({  
+            message: "Something went wrong",
+            error
+        })
+    }
+}
+
+export const getUsers = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = jwtDecode(token);
+        const user = await User.findOne({ _id: decodedToken.user._id })
+        
+        return res.status(200).json({
+            user
+        })
+        
+    } catch (error) {
+        res.status(500).json({  
+            message: "Something went wrong",
+            error
+        })
+    }
+}
 

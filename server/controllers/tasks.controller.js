@@ -97,18 +97,10 @@ export const getTasks = async (req, res) => {
 
 export const editTasks = async (req, res) => {
     try {
-        const { name,startDate, endDate, assignee, projectName ,projectDescription,priority, files, id } = req.body;
+        const { name,startDate, endDate, assignee, projectName ,projectDescription,priority, id } = req.body;
         const token = req.headers.authorization;
         const decodedToken = jwtDecode(token);
         const user = decodedToken.user;
-
-        const results = await Tasks.find({ name });
-
-        if(results.length > 0) {
-            return res.status(409).json({
-                message: 'Task name taken, please use another name',
-            });
-        }
 
         const created = await Tasks.findByIdAndUpdate(id,{ 
             name,
@@ -118,7 +110,6 @@ export const editTasks = async (req, res) => {
             projectName,
             projectDescription,
             priority,
-            files,
         })
 
         if(created){
@@ -129,6 +120,7 @@ export const editTasks = async (req, res) => {
             return false;
         }
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             message: "Something went wrong",
             error
@@ -136,9 +128,9 @@ export const editTasks = async (req, res) => {
     }
 }
 
-export const deleteTasks = async () => {
+export const deleteTasks = async (req, res) => {
     try {
-        const id = req.query.id;
+        const { id } = req.query;
         const results = await Tasks.deleteOne({ _id: id });
         if(results){
             res.status(201).json({
@@ -146,6 +138,21 @@ export const deleteTasks = async () => {
             });
             return false;
         }
+    } catch (error) {
+        res.status(500).json({
+            message: "Something went wrong",
+            error
+        })
+    }
+}
+
+export const getOneTask = async (req, res) => {
+    try {
+        const { id } = req.query;
+        const results = await Tasks.findOne({ _id: id });
+        return res.status(200).json({
+            results,
+        });
     } catch (error) {
         res.status(500).json({
             message: "Something went wrong",
